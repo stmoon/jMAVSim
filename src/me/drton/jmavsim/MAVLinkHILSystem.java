@@ -104,8 +104,21 @@ public class MAVLinkHILSystem extends MAVLinkSystem {
                 msg_gps.set("fix_type", gps.fix);
                 msg_gps.set("satellites_visible", 10);
                 sendMessage(msg_gps);
-            }
-        }
+	    }
+	}
+
+	// Lidar-Lite
+	MAVLinkMessage msg_distSensor = new MAVLinkMessage(schema, "DISTANCE_SENSOR", sysId, componentId);
+	msg_distSensor.set("time_boot_ms", tu * 1000);
+	msg_distSensor.set("min_distance", 0);          // #define LL40LS_MIN_DISTANCE (0.00f)
+	msg_distSensor.set("max_distance", 60);         // #define LL40LS_MAX_DISTANCE (60.00f)
+	msg_distSensor.set("current_distance", sensors.getDistance());
+	msg_distSensor.set("type", 0);                  // MAV_DISTANCE_SENSOR_LASER = 0
+	msg_distSensor.set("id", 0);
+	msg_distSensor.set("orientation", 0);
+	msg_distSensor.set("covariance", 0);
+	sendMessage(msg_distSensor);
+
     }
 
     private void initMavLink() {

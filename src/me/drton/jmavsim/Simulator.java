@@ -25,7 +25,7 @@ public class Simulator implements Runnable {
     public static final int DEFAULT_AUTOPILOT_PORT = 14560;
     public static final int DEFAULT_QGC_BIND_PORT = 0;
     public static final int DEFAULT_QGC_PEER_PORT = 14550;
-    public static final String DEFAULT_SERIAL_PATH = "/dev/tty.usbmodem1";
+    public static final String DEFAULT_SERIAL_PATH = "/dev/ttyACM0";
     public static final int DEFAULT_SERIAL_BAUD_RATE = 230400;
     public static final String LOCAL_HOST = "127.0.0.1";
 
@@ -47,7 +47,8 @@ public class Simulator implements Runnable {
         // Create world
         world = new World();
         // Set global reference point
-        world.setGlobalReference(new LatLonAlt(55.753395, 37.625427, 0.0));
+        //world.setGlobalReference(new LatLonAlt(55.753395, 37.625427, 0.0));
+	world.setGlobalReference(new LatLonAlt(36.3745368, 127.3527378, 0.0));
 
         MAVLinkSchema schema = new MAVLinkSchema("mavlink/message_definitions/common.xml");
 
@@ -59,6 +60,7 @@ public class Simulator implements Runnable {
         connCommon.addSkipMessage(schema.getMessageDefinition("HIL_CONTROLS").id);
         connCommon.addSkipMessage(schema.getMessageDefinition("HIL_SENSOR").id);
         connCommon.addSkipMessage(schema.getMessageDefinition("HIL_GPS").id);
+	connCommon.addSkipMessage(schema.getMessageDefinition("DISTANCE_SENSOR").id);
         world.addObject(connCommon);
 
         // Create ports
@@ -125,8 +127,8 @@ public class Simulator implements Runnable {
         Visualizer3D visualizer = new Visualizer3D(world);
 
         // Put camera on vehicle (FPV)
-        visualizer.setViewerPositionObject(vehicle);
-        visualizer.setViewerPositionOffset(new Vector3d(-0.6f, 0.0f, -0.3f));   // Offset from vehicle center
+        //visualizer.setViewerPositionObject(vehicle);
+        //visualizer.setViewerPositionOffset(new Vector3d(-0.6f, 0.0f, -0.3f));   // Offset from vehicle center
 
         // Put camera on vehicle with gimbal
         /*
@@ -139,10 +141,8 @@ public class Simulator implements Runnable {
         */
 
         // Put camera on static point and point to vehicle
-        /*
-        visualizer.setViewerPosition(new Vector3d(-5.0, 0.0, -1.7));
+        visualizer.setViewerPosition(new Vector3d(-10.0, 0.0, -1.7));
         visualizer.setViewerTargetObject(vehicle);
-        */
 
         // Open ports
         autopilotMavLinkPort.open();

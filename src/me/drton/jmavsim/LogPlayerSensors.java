@@ -50,6 +50,12 @@ public class LogPlayerSensors implements Sensors {
     }
 
     @Override
+    public double getDistance() {
+	// TODO
+	return 0;
+    }
+
+    @Override
     public double getPressureAlt() {
         return baroAlt;
     }

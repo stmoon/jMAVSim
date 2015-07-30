@@ -36,7 +36,26 @@ public class SimpleSensors implements Sensors {
     public void setGPSInterval(long gpsInterval) {
         this.gpsInterval = gpsInterval;
     }
+    
+    private double getNoise(double average, double stdev) {
+	double v1;
+	double v2;
+	double s;
+	double noiseValue;
 
+	do {
+	    v1 =  2 * Math.random() - 1;      // -1.0 ~ 1.0 까지의 값
+	    v2 =  2 * Math.random() - 1;      // -1.0 ~ 1.0 까지의 값
+	    s = v1 * v1 + v2 * v2;
+	} while (s >= 1 || s == 0);
+
+	s = Math.sqrt( (-2 * Math.log(s)) / s );
+
+	noiseValue = v1 * s;
+	noiseValue = (stdev * noiseValue) + average;
+
+	return noiseValue;
+    }
 
     @Override
     public Vector3d getAcc() {
@@ -64,7 +83,9 @@ public class SimpleSensors implements Sensors {
 
     @Override
     public double getPressureAlt() {
-        return -object.getPosition().z;
+	Vector3d vel = new Vector3d(object.getVelocity());
+	return -object.getPosition().z + getNoise(vel.length()*0.3 ,1);
+        //return -object.getPosition().z;
     }
 
     @Override
@@ -80,8 +101,20 @@ public class SimpleSensors implements Sensors {
     }
 
     @Override
+    // ref : http://diydrones.com/forum/topics/sf-9dof-razor-ahrs-dcm-to
+    public double getDistance()
+    {
+	Matrix3d rot = new Matrix3d(object.getRotation());
+        double pitch = -Math.asin(rot.m20);
+        double roll =  Math.atan2(rot.m21, rot.m22);
+        double distance =  -object.getPosition().z * Math.sqrt(1 + Math.pow(Math.tan(Math.abs(pitch)), 2) + Math.pow(Math.tan(Math.abs(roll)), 2)) ;
+	//System.out.println(Math.toDegrees(pitch) + "," + Math.toDegrees(roll) + " ," + distance +  "," + -object.getPosition().z);
+        return distance;
+    }
+
+    @Override
     public void update(long t) {
-        // GPS
+	// GPS
         if (t > gpsStartTime && t > gpsLast + gpsInterval) {
             gpsLast = t;
             gpsUpdated = true;

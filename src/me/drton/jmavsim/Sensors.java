@@ -20,5 +20,7 @@ public interface Sensors {
 
     boolean isGPSUpdated();
 
+    double getDistance();
+
     void update(long t);
 }
