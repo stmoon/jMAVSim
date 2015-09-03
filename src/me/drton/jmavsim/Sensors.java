@@ -20,6 +20,8 @@ public interface Sensors {
 
     boolean isGPSUpdated();
 
+    boolean isLidarUpdated();
+
     double getDistance();
 
     void update(long t);

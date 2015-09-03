@@ -48,7 +48,7 @@ public class Simulator implements Runnable {
         world = new World();
         // Set global reference point
         //world.setGlobalReference(new LatLonAlt(55.753395, 37.625427, 0.0));
-	world.setGlobalReference(new LatLonAlt(36.3745368, 127.3527378, 0.0));
+	world.setGlobalReference(new LatLonAlt(36.3745368, 127.3527378, 60.0));
 
         MAVLinkSchema schema = new MAVLinkSchema("mavlink/message_definitions/common.xml");
 

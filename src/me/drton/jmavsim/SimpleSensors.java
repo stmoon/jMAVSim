@@ -15,9 +15,13 @@ public class SimpleSensors implements Sensors {
     private DelayLine<GNSSReport> gpsDelayLine = new DelayLine<GNSSReport>();
     private long gpsStartTime = 0;
     private long gpsInterval = 200;
+    private long lidarInterval = 50;
     private long gpsLast = 0;
+    private long lidarLast = 0;
+
     private GNSSReport gps = new GNSSReport();
     private boolean gpsUpdated = false;
+    private boolean lidarUpdated = false;
 
     @Override
     public void setObject(DynamicObject object) {
@@ -84,7 +88,7 @@ public class SimpleSensors implements Sensors {
     @Override
     public double getPressureAlt() {
 	Vector3d vel = new Vector3d(object.getVelocity());
-	return -object.getPosition().z + getNoise(vel.length()*0.3 ,1);
+	return -object.getPosition().z + getNoise(vel.length()*0.3 ,1) - 100.0 ;
         //return -object.getPosition().z;
     }
 
@@ -97,6 +101,13 @@ public class SimpleSensors implements Sensors {
     public boolean isGPSUpdated() {
         boolean res = gpsUpdated;
         gpsUpdated = false;
+        return res;
+    }
+
+    @Override
+    public boolean isLidarUpdated() {
+        boolean res = lidarUpdated;
+        lidarUpdated = false;
         return res;
     }
 
@@ -128,5 +139,11 @@ public class SimpleSensors implements Sensors {
             gpsCurrent.time = System.currentTimeMillis() * 1000;
             gps = gpsDelayLine.getOutput(t, gpsCurrent);
         }
+
+	// Lidar-Lite
+	if ( t >  lidarLast + lidarInterval ) {
+	    lidarLast = t;
+	    lidarUpdated = true;
+	}
     }
 }
