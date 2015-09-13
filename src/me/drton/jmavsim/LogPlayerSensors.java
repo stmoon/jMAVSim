@@ -73,6 +73,11 @@ public class LogPlayerSensors implements Sensors {
     }
 
     @Override
+    public boolean isLidarUpdated() {
+        return true;
+    }
+
+    @Override
     public void update(long t) {
         if (logReader != null) {
             Map<String, Object> logData = new HashMap<String, Object>();

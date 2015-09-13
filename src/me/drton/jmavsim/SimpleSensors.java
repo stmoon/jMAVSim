@@ -87,8 +87,8 @@ public class SimpleSensors implements Sensors {
 
     @Override
     public double getPressureAlt() {
-	Vector3d vel = new Vector3d(object.getVelocity());
-	return -object.getPosition().z + getNoise(vel.length()*0.3 ,1) - 100.0 ;
+        Vector3d vel = new Vector3d(object.getVelocity());
+	    return -object.getPosition().z + getNoise(vel.length()*0.3 ,1) - 100.0 ;
         //return -object.getPosition().z;
     }
 
@@ -115,11 +115,11 @@ public class SimpleSensors implements Sensors {
     // ref : http://diydrones.com/forum/topics/sf-9dof-razor-ahrs-dcm-to
     public double getDistance()
     {
-	Matrix3d rot = new Matrix3d(object.getRotation());
+	    Matrix3d rot = new Matrix3d(object.getRotation());
         double pitch = -Math.asin(rot.m20);
         double roll =  Math.atan2(rot.m21, rot.m22);
         double distance =  -object.getPosition().z * Math.sqrt(1 + Math.pow(Math.tan(Math.abs(pitch)), 2) + Math.pow(Math.tan(Math.abs(roll)), 2)) ;
-	//System.out.println(Math.toDegrees(pitch) + "," + Math.toDegrees(roll) + " ," + distance +  "," + -object.getPosition().z);
+	    //System.out.println(Math.toDegrees(pitch) + "," + Math.toDegrees(roll) + " ," + distance +  "," + -object.getPosition().z);
         return distance;
     }
 
@@ -140,10 +140,10 @@ public class SimpleSensors implements Sensors {
             gps = gpsDelayLine.getOutput(t, gpsCurrent);
         }
 
-	// Lidar-Lite
-	if ( t >  lidarLast + lidarInterval ) {
-	    lidarLast = t;
-	    lidarUpdated = true;
-	}
+        // Lidar-Lite
+        if ( t >  lidarLast + lidarInterval ) {
+            lidarLast = t;
+            lidarUpdated = true;
+        }
     }
 }
