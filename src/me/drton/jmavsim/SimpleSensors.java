@@ -125,7 +125,7 @@ public class SimpleSensors implements Sensors {
 
     @Override
     public void update(long t) {
-	// GPS
+	    // GPS
         if (t > gpsStartTime && t > gpsLast + gpsInterval) {
             gpsLast = t;
             gpsUpdated = true;

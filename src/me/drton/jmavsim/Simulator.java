@@ -48,7 +48,7 @@ public class Simulator implements Runnable {
         world = new World();
         // Set global reference point
         //world.setGlobalReference(new LatLonAlt(55.753395, 37.625427, 0.0));
-	world.setGlobalReference(new LatLonAlt(36.3745368, 127.3527378, 60.0));
+	    world.setGlobalReference(new LatLonAlt(36.3745368, 127.3527378, 60.0));
 
         MAVLinkSchema schema = new MAVLinkSchema("mavlink/message_definitions/common.xml");
 
@@ -60,7 +60,7 @@ public class Simulator implements Runnable {
         connCommon.addSkipMessage(schema.getMessageDefinition("HIL_CONTROLS").id);
         connCommon.addSkipMessage(schema.getMessageDefinition("HIL_SENSOR").id);
         connCommon.addSkipMessage(schema.getMessageDefinition("HIL_GPS").id);
-	connCommon.addSkipMessage(schema.getMessageDefinition("DISTANCE_SENSOR").id);
+	    connCommon.addSkipMessage(schema.getMessageDefinition("DISTANCE_SENSOR").id);
         world.addObject(connCommon);
 
         // Create ports
