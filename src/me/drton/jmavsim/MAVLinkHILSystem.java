@@ -110,10 +110,10 @@ public class MAVLinkHILSystem extends MAVLinkSystem {
 	// Lidar-Lite
 	if (sensors.isLidarUpdated()) {
 	    MAVLinkMessage msg_distSensor = new MAVLinkMessage(schema, "DISTANCE_SENSOR", sysId, componentId);
-	    msg_distSensor.set("time_boot_ms", tu * 1000);
-	    msg_distSensor.set("min_distance", 0*1000);          // #define LL40LS_MIN_DISTANCE (0.00f)
-	    msg_distSensor.set("max_distance", 60*1000);         // #define LL40LS_MAX_DISTANCE (60.00f)
-	    msg_distSensor.set("current_distance", sensors.getDistance()*1000);
+	    msg_distSensor.set("time_boot_ms", tu * 100);
+	    msg_distSensor.set("min_distance", 0*100);          // #define LL40LS_MIN_DISTANCE (0.00f)	    m -> cm
+	    msg_distSensor.set("max_distance", 60*100);         // #define LL40LS_MAX_DISTANCE (60.00f)     m -> cm
+	    msg_distSensor.set("current_distance", (int)(sensors.getDistance()*100));	    // m -> cm
 	    msg_distSensor.set("type", 0);                  // MAV_DISTANCE_SENSOR_LASER = 0
 	    msg_distSensor.set("id", 0);
 	    msg_distSensor.set("orientation", 0);

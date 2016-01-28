@@ -109,6 +109,7 @@ public class Simulator implements Runnable {
         I.m00 = 0.005;  // X
         I.m11 = 0.005;  // Y
         I.m22 = 0.009;  // Z
+
         vehicle.setMomentOfInertia(I);
         SimpleSensors sensors = new SimpleSensors();
         sensors.setGPSDelay(200);

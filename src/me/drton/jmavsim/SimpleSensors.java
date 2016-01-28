@@ -120,7 +120,8 @@ public class SimpleSensors implements Sensors {
         double roll =  Math.atan2(rot.m21, rot.m22);
         double distance =  -object.getPosition().z * Math.sqrt(1 + Math.pow(Math.tan(Math.abs(pitch)), 2) + Math.pow(Math.tan(Math.abs(roll)), 2)) ;
 	    //System.out.println(Math.toDegrees(pitch) + "," + Math.toDegrees(roll) + " ," + distance +  "," + -object.getPosition().z);
-        return distance;
+	double noise = getNoise(0.0 , 0.05);
+        return distance + noise < 0.0 ? 0.0 : distance + noise;
     }
 
     @Override
