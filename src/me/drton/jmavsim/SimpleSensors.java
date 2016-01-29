@@ -22,11 +22,37 @@ public class SimpleSensors implements Sensors {
     private GNSSReport gps = new GNSSReport();
     private boolean gpsUpdated = false;
     private boolean lidarUpdated = false;
+    private double pressureAltOffset = 0.0;
 
     @Override
     public void setObject(DynamicObject object) {
         this.object = object;
         globalProjector.init(object.getWorld().getGlobalReference());
+    }
+
+    public double randomNoise(double stdDev) {
+        double x0;
+        double b0, b1;
+
+        do {
+            b0 = Math.random();
+            b1 = Math.random();
+        } while (b0 <= Float.intBitsToFloat(0x1));
+
+        x0 = java.lang.Math.sqrt(-2.0 * java.lang.Math.log(b0)) * java.lang.Math.cos(Math.PI * 2.0 * b1);
+
+        if (java.lang.Double.isInfinite(x0) || java.lang.Double.isNaN(x0)) {
+            x0 = 0.0;
+        }
+
+        return x0 * (stdDev * stdDev);
+    }
+
+    public Vector3d addZeroMeanNoise(Vector3d vIn, double stdDev) {
+
+        return new Vector3d(vIn.x + randomNoise(stdDev),
+                            vIn.y + randomNoise(stdDev),
+                            vIn.z + randomNoise(stdDev));
     }
 
     public void setGPSStartTime(long time) {
@@ -61,6 +87,10 @@ public class SimpleSensors implements Sensors {
 	return noiseValue;
     }
 
+    public void setPressureAltOffset(double pressureAltOffset) {
+        this.pressureAltOffset = pressureAltOffset;
+    }
+
     @Override
     public Vector3d getAcc() {
         Vector3d accBody = new Vector3d(object.getAcceleration());
@@ -68,21 +98,34 @@ public class SimpleSensors implements Sensors {
         Matrix3d rot = new Matrix3d(object.getRotation());
         rot.transpose();
         rot.transform(accBody);
+        accBody = addZeroMeanNoise(accBody, 0.05);
         return accBody;
     }
 
     @Override
     public Vector3d getGyro() {
-        return object.getRotationRate();
+        return addZeroMeanNoise(object.getRotationRate(), 0.01);
     }
 
     @Override
     public Vector3d getMag() {
         Vector3d mag = new Vector3d(object.getWorld().getEnvironment().getMagField(object.getPosition()));
+
+        // XXX enabling this triggers an obscure Java / jMAVSim bug
+        // to be debugged later, as the declination is optional
+        // for such a simple simulator.
+        //double decl = (object.getWorld().getEnvironment().getMagDeclination(gps.position.lat / Math.PI * 180.0, gps.position.lon / Math.PI / 180.0) / 180.0) * Math.PI;
+        double decl = 0.0;
+
+        Matrix3d rotDecl = new Matrix3d(Math.cos(decl), -Math.sin(decl), 0.0,
+                                        Math.sin(decl),  Math.cos(decl), 0.0,
+                                        0.0           , 0.0            , 1.0);
+
+        rotDecl.transform(mag);
         Matrix3d rot = new Matrix3d(object.getRotation());
         rot.transpose();
         rot.transform(mag);
-        return mag;
+        return addZeroMeanNoise(mag, 0.005);
     }
 
     @Override
@@ -135,7 +178,7 @@ public class SimpleSensors implements Sensors {
             gpsCurrent.position = globalProjector.reproject(new double[]{pos.x, pos.y, pos.z});
             gpsCurrent.eph = 1.0;
             gpsCurrent.epv = 1.0;
-            gpsCurrent.velocity = object.getVelocity();
+            gpsCurrent.velocity = new Vector3d(object.getVelocity());
             gpsCurrent.fix = 3;
             gpsCurrent.time = System.currentTimeMillis() * 1000;
             gps = gpsDelayLine.getOutput(t, gpsCurrent);
